@@ -1,41 +1,28 @@
 import Chart from "react-apexcharts";
+import { qtPorDia, clasPorNoticia } from "../../../../utils/charts";
+import Slider from "react-slick";
 
 const Charts = () => {
-  const series = [
-    {
-      name: "series-1",
-      data: [30, 40, 45, 50, 49, 60, 70, 91]
-    }
-  ]
-  const chartOptions = {
-    options: {
-      chart: {
-        id: "basic-bar"
-      },
-      xaxis: {
-        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
-      }
-    },
-    series: series
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    autoplay: false
   };
 
-  const chartDonut = {
-    options: {},
-    series: [44, 55, 41, 17, 15],
-    labels: ['A', 'B', 'C', 'D', 'E']
-  }
-
   return (
-    <section className=" flex justify-center items-center w-1/2">
-      <section className="flex flex-col w-10/12 h-10/12 rounded-xl p-4 shadow-lg">
-        <Chart
-          options={chartOptions}
-          series={series}
-          type="bar"
-          width="500"
-        />
-         <Chart options={chartDonut.options} series={chartDonut.series} type="donut" width="380" />
-      </section>
+    <section className="h-1/2">
+      <Slider {...settings}>
+        <div className="w-full">
+          <Chart options={qtPorDia.options} series={qtPorDia.series} type="bar" width="100%" height={300} />
+        </div>
+        <div className="w-full">
+          <Chart options={clasPorNoticia.options} series={clasPorNoticia.series} type="donut" height={300} />
+        </div>
+      </Slider>
     </section>
   );
 };
