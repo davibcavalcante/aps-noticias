@@ -1,10 +1,10 @@
 import bg from '../../../../assets/bg-black.jpg'
 
-const NewsCard = ({ article, id }) => {
+const NewsCard = ({ article, id, setNews, currentActive }) => {
   return (
-    <article className="relative rounded-xl overflow-hidden h-80 w-[600px] px-2">
+    <article className={`relative rounded-xl overflow-hidden h-80 w-[600px] px-2 max-w-full cursor-pointer ${currentActive === id ? 'border-4 border-success' : ''}`}  onClick={() => setNews(id, article.title)}>
       <div className="absolute top-0 left-0 w-[calc(100% - 2.5rem)] h-full bg-linear-to-t bg- from-5% from-neutral-800 to-transparent z-10 rounded-xl overflow-hidden"></div>
-      <div className="bg-main w-10 h-10 absolute top-4 left-4 rounded-full text-white text-xl flex items-center justify-center font-bold">
+      <div className="bg-main w-10 h-10 absolute top-4 left-4 rounded-full text-white text-xl flex items-center justify-center font-bold z-50">
         {id}
       </div>
       <div className="absolute bottom-0 w-full text-white p-4 z-20">

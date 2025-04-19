@@ -1,9 +1,16 @@
 import Slider from "react-slick";
 import useFetchRss from "../../../../hooks/useFetchRss";
 import NewsCard from "./NewsCard";
+import { useState } from 'react';
 
-const News = () => {
+const News = ({ setActiveNews }) => {
   const { articles, loading, error } = useFetchRss();
+  const [currentActive, setCurrentActive] = useState(0);
+
+  const setNews = (id, title) => {
+    setActiveNews(prev => title === prev ? '' : title)
+    setCurrentActive(prev => id === prev ? 0 : id);
+  };
 
   if (loading || error) return;
 
@@ -20,7 +27,9 @@ const News = () => {
     <section className="h-1/2">
       <Slider {...settings} className="h-full">
         {articles && articles.items.map((article, index) =>
-          <NewsCard key={index} article={article} id={index + 1}/>
+          <div key={index} className="p-2">
+            <NewsCard article={article} id={index + 1} setNews={setNews} currentActive={currentActive} />
+          </div>
         )}
       </Slider>
     </section>
