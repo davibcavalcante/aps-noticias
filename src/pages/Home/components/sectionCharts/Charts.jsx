@@ -1,8 +1,14 @@
 import Chart from "react-apexcharts";
-import { qtPorDia } from "../../../../utils/charts";
 import Slider from "react-slick";
 
 const Charts = ({ newsData }) => {
+  const dates = newsData.map(item => item.date);
+  const tags = newsData.map(item => item.tag);
+
+  const uniqueTags = [...new Set(tags)];
+  const qtPerTags = uniqueTags.map(tag =>
+    tags.filter(item => item === tag).length
+  );
 
   const settings = {
     dots: false,
@@ -19,6 +25,47 @@ const Charts = ({ newsData }) => {
       newsData.filter((item => item.classificacao === 'ruim')).length,
       newsData.filter((item => item.classificacao === 'irrelevante')).length,
     ]
+  };
+
+  const formatadas = dates.map(date => {
+    const [ano, mes, dia] = date.split("-");
+    return `${dia}/${mes}`;
+  });
+
+  const unicas = [...new Set(formatadas)];
+
+  const contagem = unicas.map(date =>
+    formatadas.filter(item => item === date).length
+  );
+  
+
+  const qtPorDia = {
+    series: [
+      {
+        data: contagem
+      }
+    ],
+    options: {
+      chart: {
+        type: "bar",
+        stacked: true,
+      },
+      title: {
+        text: 'Quantidade de notícias por dia',
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "50%",
+        },
+      },
+      xaxis: {
+        categories: unicas,
+      },
+      legend: {
+        position: "bottom",
+      },
+    }
   };
 
   const options = {
@@ -85,14 +132,46 @@ const Charts = ({ newsData }) => {
     }
   }
 
+  const tagChart = {
+    series: [
+      {
+        data: qtPerTags
+      }
+    ],
+    options: {
+      chart: {
+        type: "bar",
+        stacked: true,
+      },
+      title: {
+        text: 'Quantidade de notícias por tema',
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: "50%",
+        },
+      },
+      xaxis: {
+        categories: uniqueTags,
+      },
+      legend: {
+        position: "bottom",
+      },
+    }
+  };
+
   return (
     <section className="h-1/2 p-2">
       <Slider {...settings}>
-        <div className="w-full">
+        <div className="w-full cursor-pointer">
           <Chart options={qtPorDia.options} series={qtPorDia.series} type="bar" width="100%" height={300} />
         </div>
-        <div className="w-full">
+        <div className="w-full cursor-pointer">
           <Chart options={options} series={series.classPerNews} type="donut" height={300} />
+        </div>
+        <div className="w-full cursor-pointer">
+          <Chart options={tagChart.options} series={tagChart.series} type="bar" width="100%" height={300} />
         </div>
       </Slider>
     </section>

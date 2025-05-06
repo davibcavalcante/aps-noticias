@@ -1,8 +1,10 @@
+import { Send } from 'lucide-react';
 import { aiFetch } from '../../../../api/config';
 import { useState } from "react";
 
 const ChatBot = ({ setNewsClassify, setLoading, setResult, setNewsData, activeNews }) => {
   const [chatMessages, setChatMessages] = useState([]);
+  const [currentTitle, setCurrentTitle] = useState('');
 
   const getHour = () => new Date().toLocaleTimeString('pt-BR', {
     hour: '2-digit',
@@ -20,11 +22,17 @@ const ChatBot = ({ setNewsClassify, setLoading, setResult, setNewsData, activeNe
       setNewsClassify(data.results);
       setNewsData(data.results);
       setResult({ status: true, message: data.message, success: false });
-      setChatMessages(prev => [...prev, getHour() + ': ' + data.message]);
+      setChatMessages(prev => [
+        ...prev,
+        `<p>${getHour()}: ${data.message}</p>`
+      ]);
     } catch (error) {
       console.log(error);
       setResult({ status: true, message: 'Erro ao classificar notícias', success: false });
-      setChatMessages(prev => [...prev, getHour() + ': Erro ao classificar notícias']);
+      setChatMessages(prev => [
+        ...prev,
+        `<p>${getHour()}: Erro ao classificar notícias</p>`
+      ]);
     } finally {
       setLoading({ status: false, message: '' });
     }
@@ -33,21 +41,24 @@ const ChatBot = ({ setNewsClassify, setLoading, setResult, setNewsData, activeNe
   const classifyUniqueNews = async () => {
 
     if (!activeNews) {
-      return setChatMessages(prev => [...prev, getHour() + ': Selecione uma notícia para que possa ser feita a classificação']);
+      return setChatMessages(prev => [...prev, `<p>${getHour()} + ': Selecione uma notícia para que possa ser feita a classificação'</p>`]);
     }
-    
+
     try {
       setChatMessages(prev => [...prev, getHour() + ': Iniciando classificação da notícia']);
       setLoading({ status: true, message: 'Classificando notícia' });
-      const response = await aiFetch.post('/classify', { text: activeNews});
+      const response = await aiFetch.post('/classify', { text: activeNews });
       const data = await response.data;
       console.log(data)
       setResult({ status: true, message: data.message, success: true });
-      setChatMessages(prev => [...prev, `${getHour()}: ${data.text} é uma notícia: ${data.result}`]);
+      setChatMessages(prev => [...prev, `<p>${getHour()}: <span style="text-decoration: underline;">${data.text}</span>: <span style="font-style: bold; text-transform: uppercase;">${data.result}</span></p>`]);
     } catch (error) {
       console.log(error);
       setResult({ status: true, message: 'Erro ao classificar notícia', success: false });
-      setChatMessages(prev => [...prev, getHour() + ': Erro ao classificar notícia']);
+      setChatMessages(prev => [
+        ...prev,
+        `<p>${getHour()}: Erro ao classificar notícia</p>`
+      ]);
     } finally {
       setLoading({ status: false, message: '' });
     }
@@ -61,16 +72,44 @@ const ChatBot = ({ setNewsClassify, setLoading, setResult, setNewsData, activeNe
       const data = await response.data;
 
       setResult({ status: true, message: data.message, success: true });
-      setChatMessages(prev => [...prev, getHour() + ': ' + data.message]);
+      setChatMessages(prev => [
+        ...prev,
+        `<p>${getHour()}: ${data.message}</p>`
+      ]);
     } catch (error) {
       console.log(error);
       setResult({ status: true, message: 'Erro ao realizar treinamento', success: false });
-      setChatMessages(prev => [...prev, getHour() + ': Erro ao realizar treinamento']);
+      setChatMessages(prev => [...prev, `<p>${getHour()} + : Erro ao realizar treinamento</p>`]);
     } finally {
       setLoading({ status: false, message: '' });
     }
   };
 
+  const handleSendNews = async () => {
+    if (!currentTitle) {
+      return setChatMessages(prev => [...prev, `<p>${getHour()} + ': Selecione uma notícia para que possa ser feita a classificação'</p>`]);
+    }
+
+    try {
+      setChatMessages(prev => [...prev, getHour() + ': Iniciando classificação da notícia']);
+      setLoading({ status: true, message: 'Classificando notícia' });
+      const response = await aiFetch.post('/classify', { text: currentTitle });
+      const data = await response.data;
+      console.log(data)
+      setResult({ status: true, message: data.message, success: true });
+      setChatMessages(prev => [...prev, `<p>${getHour()}: <span style="text-decoration: underline;">${data.text}</span>: <span style="font-style: bold; text-transform: uppercase;">${data.result}</span></p>`]);
+    } catch (error) {
+      console.log(error);
+      setResult({ status: true, message: 'Erro ao classificar notícia', success: false });
+      setChatMessages(prev => [
+        ...prev,
+        `<p>${getHour()}: Erro ao classificar notícia</p>`
+      ]);
+    } finally {
+      setLoading({ status: false, message: '' });
+      setCurrentTitle('');
+    }
+  };
 
   return (
     <section className="h-full flex flex-col max-h-full">
@@ -82,13 +121,19 @@ const ChatBot = ({ setNewsClassify, setLoading, setResult, setNewsData, activeNe
         <div className='flex flex-col gap-4 py-8 overflow-auto'>
           {chatMessages.length > 0 &&
             chatMessages.map((msg, index) =>
-              <div key={index} className='text-white'>{msg}</div>
+              <div key={index} className='text-white' dangerouslySetInnerHTML={{ __html: msg }} />
             )
           }
         </div>
       </section>
       <section className="">
         <form>
+          <section className="flex items-center justify-between border-t border-white p-2 gap-2 ">
+            <input type="text" placeholder='Digite o título da notícia ' className='bg-white/80 border border-white p-2 rounded-sm shadow-sm flex-1' onChange={(e) => setCurrentTitle(e.target.value)} value={currentTitle} />
+            <div className='bg-white p-2 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-light duration-300' onClick={handleSendNews}>
+              <Send className='text-main' />
+            </div>
+          </section>
           <section className="flex items-center justify-between border-t border-white p-2 gap-2 ">
             <button
               className="bg-secondary hover:bg-light duration-200 text-white font-bold p-2 rounded-lg cursor-pointer w-1/3 text-sm" type="button" onClick={train}>
