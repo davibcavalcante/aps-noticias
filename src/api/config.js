@@ -13,3 +13,10 @@ export const aiFetch = axios.create({
         "Content-Type": "application/json; charset=UTF-8"
     }
 });
+
+export const networkFetch = axios.create({
+    baseURL: 'http://127.0.0.1:8000/api/network',
+    headers: {
+        "Content-Type": "application/json; charset=UTF-8"
+    }
+});

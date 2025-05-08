@@ -2,9 +2,10 @@ import Chart from "react-apexcharts";
 import Slider from "react-slick";
 
 const Charts = ({ newsData }) => {
+  console.log(newsData)
   const dates = newsData.map(item => item.date);
   const tags = newsData.map(item => item.tag);
-
+  console.log(newsData)
   const uniqueTags = [...new Set(tags)];
   const qtPerTags = uniqueTags.map(tag =>
     tags.filter(item => item === tag).length
@@ -28,8 +29,7 @@ const Charts = ({ newsData }) => {
   };
 
   const formatadas = dates.map(date => {
-    const [ano, mes, dia] = date.split("-");
-    return `${dia}/${mes}`;
+    return date.substring(0, 5)
   });
 
   const unicas = [...new Set(formatadas)];
@@ -38,6 +38,7 @@ const Charts = ({ newsData }) => {
     formatadas.filter(item => item === date).length
   );
   
+  console.log(unicas)
 
   const qtPorDia = {
     series: [
@@ -160,6 +161,8 @@ const Charts = ({ newsData }) => {
       },
     }
   };
+
+  console.log(uniqueTags)  
 
   return (
     <section className="h-1/2 p-2">
