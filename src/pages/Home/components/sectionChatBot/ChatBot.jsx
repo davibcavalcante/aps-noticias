@@ -127,8 +127,8 @@ const ChatBot = ({ setNewsClassify, setLoading, setResult, setNewsData, activeNe
         </div>
       </section>
       <section className="">
-        <form>
-          <section className="flex items-center justify-between border-t border-white p-2 gap-2 ">
+        <form onSubmit={(e) => e.preventDefault()}>
+          <section className=" flex items-center justify-between border-t border-white p-2 gap-2 ">
             <input type="text" placeholder='Digite o título da notícia ' className='bg-white/80 border border-white p-2 rounded-sm shadow-sm flex-1' onChange={(e) => setCurrentTitle(e.target.value)} value={currentTitle} />
             <div className='bg-white p-2 w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-light duration-300' onClick={handleSendNews}>
               <Send className='text-main' />
